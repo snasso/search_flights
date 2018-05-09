@@ -160,4 +160,28 @@ function parseDetails(argList) {
             console.log(`${line["Origin"]} --> ${line["Destination"]} (${line["Departure Time"]} --> ${line["Destination Time"]}) - ${line["Price"]}`);
         });
     }
+
+    searchAgain()
+}
+
+
+function searchAgain() {
+
+    // Clear input values
+    inputOrigin         = "";
+    inputDestination    = "";
+
+    detailsArr          = [];
+
+    let message     = "\nWould you like to search again? (y/n) \n> ";
+    let selection   = readlineSync.question(message);
+
+    if (selection.toLowerCase() === 'y') {
+        enterInputArguments();
+    } else if (selection.toLowerCase() === 'n') {
+        console.log("See ya!");
+    } else {
+        console.log('Please enter either y (yes) or n (no).');
+        searchAgain();
+    }
 }
