@@ -1,6 +1,9 @@
 const readlineSync  = require('readline-sync');
 const fs            = require('fs');
 
+
+let inputOrigin         = "YYZ";
+let inputDestination    = "YYC";
  
 let inputFile1 = 'Provider1.txt';
 let inputFile2 = 'Provider2.txt';
@@ -13,6 +16,48 @@ let title4 = "";
 let title5 = "";
 
 let detailsArr = [];
+
+// Start application
+enterInputArguments();
+
+
+function enterInputArguments() {
+
+    let message = "\nPlease enter query title 'searchFlights' followed by -o and the Airport origin code then -d and a destination code.";
+    message += "\nEx: searchFlights -o YYZ -d YYC \n>";
+    const query = readlineSync.question(message);
+
+    let splitQuery = query.split(" ");
+
+    checkArguments(splitQuery);
+}
+
+
+function checkArguments(args) {
+
+    let argList = [];
+
+    args.forEach(function(arg, index) {
+
+        if (arg !== "") {
+            argList.push(arg);
+        }
+    });
+
+    if (args.length < 5) {
+
+        let message = "Error: You did not provide enough arguments. 5 are required.";
+        console.log(message);
+
+    } else {
+
+        parseDetails(argList);
+        return;
+    }
+
+    // Fallback if any errors encountered
+    enterInputArguments();
+}
 
 
 function fileReader(inputFile, delimiter) {
@@ -36,27 +81,31 @@ function fileReader(inputFile, delimiter) {
     
             } else {
 
-                let origin = splitLine[0].trim();
-                let departureTime = splitLine[1].replace(/-/gi, '/').trim();
-                let destination = splitLine[2].trim();
+                let origin          = splitLine[0].trim();
+                let departureTime   = splitLine[1].replace(/-/gi, '/').trim();
+                let destination     = splitLine[2].trim();
                 let destinationTime = splitLine[3].replace(/-/gi, '/').trim();
-                let price = splitLine[4].trim();
+                let price           = splitLine[4].trim();
 
-                let result = { 
-                    [title1] : origin,
-                    [title2] : departureTime,
-                    [title3] : destination,
-                    [title4] : destinationTime,
-                    [title5] : price
-                };
+                if (origin === inputOrigin && destination === inputDestination) {
 
-                detailsArr.push(result);
+                    let result = { 
+                        [title1] : origin,
+                        [title2] : departureTime,
+                        [title3] : destination,
+                        [title4] : destinationTime,
+                        [title5] : price
+                    };
+    
+                    detailsArr.push(result);
+                }
             }
         });
     } catch(e) {
         console.log('Error:', e.stack);
     }
 }
+
 
 function removeDuplicates(arr) {
 	let hashTable = {};
@@ -70,45 +119,43 @@ function removeDuplicates(arr) {
 }
 
 
-fileReader(inputFile1, ",");
-fileReader(inputFile2, ",");
-fileReader(inputFile3, "|");
+function parseDetails(argList) {
+
+    console.log(`argList: ${argList}`)
+
+    fileReader(inputFile1, ",");
+    fileReader(inputFile2, ",");
+    fileReader(inputFile3, "|");
 
 
-let uniqueArr = removeDuplicates(detailsArr);
+    if (detailsArr.length === 0) {
 
-// Copy values from uniqueArr
-let newArr = uniqueArr.slice(0);
+        console.log(`No Flights Found for ${inputOrigin} --> ${inputDestination}`);
 
-// Sort Array by Price
-newArr.sort((a, b) => parseFloat((a.Price).replace("$", "")) - parseFloat((b.Price).replace("$", "")));
+    } else {
 
-console.log("Flight details by price ($):");
-newArr.forEach(function(line) {
+        let uniqueArr = removeDuplicates(detailsArr);
 
-    console.log(`${line["Origin"]} --> ${line["Destination"]} (${line["Departure Time"]} --> ${line["Destination Time"]}) - ${line["Price"]}`);
-});
+        // Copy values from uniqueArr
+        let newArr = uniqueArr.slice(0);
 
+        // Sort Array by Price
+        newArr.sort((a, b) => parseFloat((a.Price).replace("$", "")) - parseFloat((b.Price).replace("$", "")));
 
-// Sort Array by date (earliest first)
-newArr.sort((a,b) => new Date(a["Departure Time"]) - new Date(b["Departure Time"]));
+        console.log("Flight details by price ($):");
+        newArr.forEach(function(line) {
 
-console.log("\nFlight details by date (earliest flight first):");
-newArr.forEach(function(line) {
-
-    console.log(`${line["Origin"]} --> ${line["Destination"]} (${line["Departure Time"]} --> ${line["Destination Time"]}) - ${line["Price"]}`);
-});
+            console.log(`${line["Origin"]} --> ${line["Destination"]} (${line["Departure Time"]} --> ${line["Destination Time"]}) - ${line["Price"]}`);
+        });
 
 
-// var args = process.argv.slice(2);
+        // Sort Array by date (earliest first)
+        newArr.sort((a,b) => new Date(a["Departure Time"]) - new Date(b["Departure Time"]));
 
-/*
-let message = "\nPlease enter 'searchFlights' and an origin and destination Airport code.";
-message += "\nEx: searchFlights -o YYZ -d YYC \n>";
-const selection = readlineSync.question(message);
+        console.log("\nFlight details by date (earliest flight first):");
+        newArr.forEach(function(line) {
 
-let splitSelection = selection.split(" ");
-
-
-console.log(splitSelection);
-*/
+            console.log(`${line["Origin"]} --> ${line["Destination"]} (${line["Departure Time"]} --> ${line["Destination Time"]}) - ${line["Price"]}`);
+        });
+    }
+}
