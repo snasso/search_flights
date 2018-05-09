@@ -60,6 +60,17 @@ function fileReader(inputFile, delimiter) {
     }
 }
 
+function removeDuplicates(arr) {
+	let hashTable = {};
+
+	return arr.filter(function (val) {
+		let key     = JSON.stringify(val);
+		let match   = Boolean(hashTable[key]);
+
+		return (match ? false : hashTable[key] = true);
+	});
+}
+
 
 console.log(`Provider1.txt:`);
 fileReader(inputFile1, ",");
@@ -74,6 +85,12 @@ fileReader(inputFile3, "|");
 console.log("Details:");
 console.log(detailsArr);
 console.log(`detailsArr.length: ${detailsArr.length}`);
+
+
+let uniqueArr = removeDuplicates(detailsArr);
+
+console.log(uniqueArr);
+console.log(`uniqueArr.length: ${uniqueArr.length}`);
 
 
 // var args = process.argv.slice(2);
