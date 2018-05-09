@@ -18,7 +18,6 @@
   },
   "homepage": "https://github.com/snasso/search_flights#readme",
   "dependencies": {
-    "csv-parse": "^2.4.0",
     "readline-sync": "^1.4.9"
   }
 }
