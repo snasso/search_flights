@@ -50,8 +50,6 @@ function fileReader(inputFile, delimiter) {
                     [title5] : price
                 };
 
-                console.log(`${origin} --> ${destination} (${departureTime} --> ${destinationTime}) - ${price}`);
-        
                 detailsArr.push(result);
             }
         });
@@ -72,25 +70,34 @@ function removeDuplicates(arr) {
 }
 
 
-console.log(`Provider1.txt:`);
 fileReader(inputFile1, ",");
-
-console.log(`Provider2.txt:`);
 fileReader(inputFile2, ",");
-
-console.log(`Provider3.txt:`);
 fileReader(inputFile3, "|");
-
-
-console.log("Details:");
-console.log(detailsArr);
-console.log(`detailsArr.length: ${detailsArr.length}`);
 
 
 let uniqueArr = removeDuplicates(detailsArr);
 
-console.log(uniqueArr);
-console.log(`uniqueArr.length: ${uniqueArr.length}`);
+// Copy values from uniqueArr
+let newArr = uniqueArr.slice(0);
+
+// Sort Array by Price
+newArr.sort((a, b) => parseFloat((a.Price).replace("$", "")) - parseFloat((b.Price).replace("$", "")));
+
+console.log("Flight details by price ($):");
+newArr.forEach(function(line) {
+
+    console.log(`${line["Origin"]} --> ${line["Destination"]} (${line["Departure Time"]} --> ${line["Destination Time"]}) - ${line["Price"]}`);
+});
+
+
+// Sort Array by date (earliest first)
+newArr.sort((a,b) => new Date(a["Departure Time"]) - new Date(b["Departure Time"]));
+
+console.log("\nFlight details by date (earliest flight first):");
+newArr.forEach(function(line) {
+
+    console.log(`${line["Origin"]} --> ${line["Destination"]} (${line["Departure Time"]} --> ${line["Destination Time"]}) - ${line["Price"]}`);
+});
 
 
 // var args = process.argv.slice(2);
