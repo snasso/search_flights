@@ -1,0 +1,24 @@
+{
+  "name": "search_flights",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snasso/search_flights.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/snasso/search_flights/issues"
+  },
+  "homepage": "https://github.com/snasso/search_flights#readme",
+  "dependencies": {
+    "csv-parse": "^2.4.0",
+    "readline-sync": "^1.4.9"
+  }
+}
