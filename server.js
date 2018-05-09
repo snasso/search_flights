@@ -2,8 +2,8 @@ const readlineSync  = require('readline-sync');
 const fs            = require('fs');
 
 
-let inputOrigin         = "YYZ";
-let inputDestination    = "YYC";
+let inputOrigin         = "";
+let inputDestination    = "";
  
 let inputFile1 = 'Provider1.txt';
 let inputFile2 = 'Provider2.txt';
@@ -121,7 +121,9 @@ function removeDuplicates(arr) {
 
 function parseDetails(argList) {
 
-    console.log(`argList: ${argList}`)
+    inputOrigin         = argList[argList.indexOf("-o") + 1];
+    inputDestination    = argList[argList.indexOf("-d") + 1];
+
 
     fileReader(inputFile1, ",");
     fileReader(inputFile2, ",");
@@ -130,7 +132,7 @@ function parseDetails(argList) {
 
     if (detailsArr.length === 0) {
 
-        console.log(`No Flights Found for ${inputOrigin} --> ${inputDestination}`);
+        console.log(`\nNo Flights Found for ${inputOrigin} --> ${inputDestination}`);
 
     } else {
 
