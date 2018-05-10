@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/snasso/search_flights#readme",
   "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
     "readline-sync": "^1.4.9"
   }
 }

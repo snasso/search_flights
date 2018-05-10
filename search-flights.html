@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Search Flights</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    </head>
+    <body> 
+        <div class="container">
+            <h1 style="text-align: center;">Search Flights</h1>
+            <br/>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        Origin:
+                        <select id="originSelector" onchange="locateFlight();";>
+                            <option></option>
+                            <!-- Javascript -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        Destination:
+                        <select id="destinationSelector" onchange="locateFlight();";>
+                            <option></option>
+                            <!-- Javascript -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <br/>
+
+            <div>
+                <select id="sortSelector" onchange="sortFlights();";>
+                    <option></option>
+                    <option value="price">Price</option>
+                    <option value="departureTime">Departure Time</option>
+                </select>
+            </div>
+            <br/>
+
+            Results:
+            <div class="table-responsive">
+                <table id="resultsTable" class="table">
+                    <tbody>
+                        <!-- Javascript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script type="text/javascript">
+
+            let uniqueArr = [];
+
+
+            $.ajax({
+                url: 'http://localhost:8080/searchFlights',
+                data: {
+                    format: 'json'
+                },
+                error: function() {},
+                success: function(data) {
+
+                    let originArr = data.originArr;
+                    let destinationArr = data.destinationArr;
+
+                    originArr.forEach(function(org, index) {
+    
+						let opt = new Option(org);
+                        document.getElementById("originSelector").add(opt);
+                    });
+
+                    destinationArr.forEach(function(dest, index) {
+    
+                        let opt = new Option(dest);
+                        document.getElementById("destinationSelector").add(opt);
+                    });
+                },
+                type: 'GET'
+            });
+
+
+            function locateFlight() {
+                
+                let origin      = document.querySelector("#originSelector").value;
+                let destination = document.querySelector("#destinationSelector").value;
+                console.log(`origin: ${origin}, destination: ${destination}`);
+
+                if (origin !== "" && destination !== "") {
+                    $.ajax({
+                        url: `http://localhost:8080/searchFlights/${origin}/${destination}`,
+                        data: {
+                            format: 'json'
+                        },
+                        error: function() {},
+                        success: function(data) {
+
+                            uniqueArr = data.uniqueArr;
+
+                            buildResultsTable(uniqueArr);
+                        },
+                        type: 'GET'
+                    });
+                }
+            }
+
+
+            function buildResultsTable(arr) {
+
+                let tableRef = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
+
+                tableRef.innerHTML = "";
+
+                if (arr.length === 0) {
+
+                    let newRow = tableRef.insertRow(tableRef.rows.length);
+
+                    let newCell1 = newRow.insertCell(0);
+
+                    newCell1.innerHTML = `No Flights Found for ${document.querySelector("#originSelector").value} --> ${document.querySelector("#destinationSelector").value}`;
+
+                } else {
+
+                    arr.forEach(function(line, index) {
+
+                        let newRow = tableRef.insertRow(tableRef.rows.length);
+
+                        let newCell1 = newRow.insertCell(0);
+
+                        newCell1.innerHTML = `${line["Origin"]} --> ${line["Destination"]} (${line["Departure Time"]} --> ${line["Destination Time"]}) - ${line["Price"]}`;
+                    });
+                }
+            }
+
+
+            function sortFlights() {
+
+                if (uniqueArr.length > 0) {
+
+                    let sortSelector = document.querySelector("#sortSelector").value;
+
+                    if (sortSelector == "price") {
+
+                        // Copy values from uniqueArr
+                        let newArr = uniqueArr.slice(0);
+
+                        // Sort Array by Price
+                        newArr.sort((a, b) => parseFloat((a.Price).replace("$", "")) - parseFloat((b.Price).replace("$", "")));
+
+                        buildResultsTable(newArr);
+
+                    } else if (sortSelector == "departureTime") {
+
+                        // Copy values from uniqueArr
+                        let newArr = uniqueArr.slice(0);
+                        
+                        // Sort Array by date (earliest first)
+                        newArr.sort((a,b) => new Date(a["Departure Time"]) - new Date(b["Departure Time"]));
+
+                        buildResultsTable(newArr);
+                    }
+                }
+            }
+            
+        </script>
+    </body>
+</html>
